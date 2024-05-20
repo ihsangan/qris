@@ -1,30 +1,47 @@
 function getMerchInfo(data) {
-  let length = data.length;
-  let merchantIndex = data.indexOf('02ID59') + 6;
-  let merchantNumberLength = parseInt(data.slice(merchantIndex, merchantIndex + 2));
-  merchantIndex += 2;
-  let merchantName = data.slice(merchantIndex, merchantIndex + merchantNumberLength);
-  let nmidIndex = data.indexOf('0215ID') + 4;
-  let nmid = data.slice(nmidIndex, nmidIndex + 15);
-  let sliceData = data.slice(merchantIndex);
-  let postIndex = sliceData.indexOf('6105') + 4
-  let postalCode= parseInt(sliceData.slice(postIndex, postIndex + 5));
-  let cityIndex = sliceData.indexOf('60') + 2;
-  let cityNumberLength = parseInt(sliceData.slice(cityIndex, cityIndex + 2));
-  cityIndex += 2;
-  let cityName = sliceData.slice(cityIndex, cityIndex + cityNumberLength);
-  let issuerIndex = data.indexOf('26') + 6;
-  let issuerNumberLength = parseInt(data.slice(issuerIndex, issuerIndex + 2));
-  issuerIndex += 2;
-  let issuerName = data.slice(issuerIndex, issuerIndex + issuerNumberLength).split('.').reverse().join('.');
+  let acquirerNumLen = parseInt(data.slice(18, 20));
+  let acquirerName = data.slice(20, 20 + acquirerNumLen).split('.').reverse().join('.').toLowerCase();
+  let sliceData = data.slice(22 + acquirerNumLen);
+  let mpan = sliceData.slice(2, 2 + 18);
+  let nns = sliceData.slice(2, 2 + 8);
+  let mid = sliceData.slice(2 + 8, 2 + 18);
+  sliceData = sliceData.slice(22);
+  let tidNumLen = parseInt(sliceData.slice(0, 2));
+  let tid = sliceData.slice(2, 2 + tidNumLen);
+  sliceData = sliceData.slice(tidNumLen + 6);
+  let category = sliceData.slice(0, 3).toLowerCase();
+  sliceData = sliceData.slice(9);
+  let switchNumLen = parseInt(sliceData.slice(0, 2));
+  let switching = sliceData.slice(2, 2 + switchNumLen).split('.').reverse().join('.').toLowerCase();
+  sliceData = sliceData.slice(6 + switchNumLen);
+  let nmid = sliceData.slice(0, 15);
+  sliceData = sliceData.slice(26);
+  let mcc = sliceData.slice(0, 4);
+  sliceData = sliceData.slice(11);
+  let nameIndex = sliceData.indexOf('D59') + 3;
+  let nameLen = parseInt(sliceData.slice(nameIndex, nameIndex + 2));
+  let name = sliceData.slice(nameIndex + 2, nameIndex + 2 + nameLen);
+  sliceData = sliceData.slice(nameIndex + 4 + nameLen);
+  let cityLen = parseInt(sliceData.slice(0, 2));
+  let city = sliceData.slice(2, 2 + cityLen);
+  sliceData = sliceData.slice(6 + cityLen);
+  let post = sliceData.slice(0, 5);
+  sliceData = sliceData.slice(5);
   let crcIndex = sliceData.indexOf('6304') + 4;
-  let crc = sliceData.slice(crcIndex)
+  let crc = sliceData.slice(crcIndex);
   return {
-    name: merchantName,
+    acquirer: acquirerName,
+    mpan: mpan,
+    nns: nns,
+    mid: mid,
+    tid: tid,
+    category: category,
+    switching: switching,
     nmid: nmid,
-    postalcode: postalCode,
-    city: cityName,
-    issuer: issuerName,
+    mcc: mcc,
+    name: name,
+    city: city,
+    post: post,
     crc: crc
   };
 };
