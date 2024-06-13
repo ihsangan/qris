@@ -58,7 +58,7 @@ function crc16($) {
 };
 
 function generateQRIS(d, p) {
-  let data = d.slice(0, -4).replace('11', '12').replace('3360', `3360540${p.length + 3}${p}.00`)
+  let data = d.slice(0, -4).replace('11', '12').replace('3360', `3360540${p.length}${p}`)
   let c = crc16(data).toString(16).toUpperCase()
   if (c.length === 3) {
     c = `0${c}`
